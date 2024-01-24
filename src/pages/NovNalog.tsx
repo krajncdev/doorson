@@ -6,6 +6,7 @@ import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import { INalog } from '../config/types';
 import { useDispatch } from 'react-redux';
+import { capitalize } from '../config/helpers';
 
 const NovNalog = () => {
   const imeOsebeRef = useRef<HTMLInputElement>(null);
@@ -23,10 +24,11 @@ const NovNalog = () => {
   });
 
   const validateField = (fieldName: string, value: string) => {
-    if (!value.trim()) {
+    if (value === '') {
+      console.log(fieldName);
       setErrors((prevErrors) => ({
         ...prevErrors,
-        [fieldName]: `${fieldName} is required`,
+        [fieldName]: `Polje ${capitalize(fieldName)} je potrebno`,
       }));
     } else {
       setErrors((prevErrors) => ({ ...prevErrors, [fieldName]: '' }));
@@ -39,25 +41,26 @@ const NovNalog = () => {
   `;
 
   const handleFormSubmit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
     const imeOsebeInput = imeOsebeRef.current?.value || '';
     const opisNapakeInput = opisNapakeRef.current?.value || '';
     const lokacijaNapakeInput = lokacijaNapakeRef.current?.value || '';
     const opisDelInput = opisDelRef.current?.value || '';
-
-    setErrors({
-      imeOsebe: '',
-      lokacijaNapake: '',
-      opisDel: '',
-      opisNapake: '',
-    });
 
     validateField('imeOsebe', imeOsebeInput);
     validateField('opisNapake', opisNapakeInput);
     validateField('lokacijaNapake', lokacijaNapakeInput);
     validateField('opisDel', opisDelInput);
 
-    if (!Object.values(errors).some((error) => error !== '')) {
-      e.preventDefault();
+    console.log(errors);
+
+    if (
+      imeOsebeInput !== '' &&
+      opisNapakeInput !== '' &&
+      lokacijaNapakeInput !== '' &&
+      opisDelInput !== ''
+    ) {
+      console.log('Success: ', errors);
       const nalog: INalog = {
         id: Date.now(),
         opisNapake: opisNapakeInput,
